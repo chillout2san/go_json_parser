@@ -12,6 +12,5 @@ const (
 	RIGHT_BRACE
 	DOUBLE_QUOTE
 	COLON
-	KEY
-	VALUE
+	String
 )
