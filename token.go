@@ -1,6 +1,6 @@
 package parser
 
-type TokenType int
+type TokenType string
 
 type Token struct {
 	Type    TokenType
@@ -8,9 +8,9 @@ type Token struct {
 }
 
 const (
-	LEFT_BRACE TokenType = iota
-	RIGHT_BRACE
-	DOUBLE_QUOTE
-	COLON
-	String
+	LEFT_BRACE   TokenType = "left_brace"
+	RIGHT_BRACE  TokenType = "right_brace"
+	DOUBLE_QUOTE TokenType = "double_quote"
+	COLON        TokenType = "colon"
+	String       TokenType = "string"
 )

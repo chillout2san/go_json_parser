@@ -5,69 +5,73 @@ import (
 )
 
 type Tokenizer struct {
-	json  []rune
-	index int
+	json    []rune
+	counter int
 }
 
+var strRegex = regexp.MustCompile(`^[a-zA-Z]+$`)
+
 func (tkn *Tokenizer) getNext() rune {
-	tkn.index = tkn.index + 1
-	return tkn.json[tkn.index]
+	next := tkn.counter + 1
+	return tkn.json[next]
 }
 
 func (tkn *Tokenizer) Exec() []Token {
 	tks := make([]Token, 0, len(tkn.json))
 
 	for i, char := range tkn.json {
-		if i < tkn.index {
+		if i < tkn.counter {
 			continue
 		}
 
 		switch char {
 		case '{':
-			tkn.index++
+			tkn.counter++
 			tks = append(tks, Token{
 				Type:    LEFT_BRACE,
 				Literal: "{",
 			})
 		case '}':
-			tkn.index++
+			tkn.counter++
 			tks = append(tks, Token{
 				Type:    LEFT_BRACE,
 				Literal: "}",
 			})
 		case '"':
-			tkn.index++
+			tkn.counter++
 			tks = append(tks, Token{
 				Type:    DOUBLE_QUOTE,
 				Literal: "\"",
 			})
 		case ':':
-			tkn.index++
+			tkn.counter++
 			tks = append(tks, Token{
 				Type:    COLON,
 				Literal: ":",
 			})
-		case '\r' | '\n' | '\t':
-			tkn.index++
+		case ' ', '\r', '\n', '\t':
+			tkn.counter++
 			continue
-		// 記号でない時
 		default:
-			strRegex := regexp.MustCompile(`^[a-zA-Z]+$`)
 			if strRegex.MatchString(string(char)) {
 				t := Token{
 					Type:    String,
 					Literal: string(char),
 				}
 				for {
-					if strRegex.MatchString(string(tkn.getNext())) {
-						t.Literal = t.Literal + string(char)
+					nc := tkn.getNext()
+					if strRegex.MatchString(string(nc)) {
+						tkn.counter++
+						t.Literal = t.Literal + string(nc)
 						continue
 					}
 					break
 				}
+				tkn.counter++
 				tks = append(tks, t)
 				continue
 			}
+			continue
 		}
 	}
 
